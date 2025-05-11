@@ -2,7 +2,7 @@ from flask import Flask, request, render_template_string, redirect, url_for
 import sqlite3
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 # Database file path
 DATABASE = '/nfs/demo.db'
@@ -58,15 +58,7 @@ def index():
         <html>
         <head>
             <title>Contacts</title>
-            <style>
-                .test-contact { background-color: #fff3f3; }
-                .test-badge {
-                    background: #ffcccc;
-                    padding: 2px 5px;
-                    border-radius: 3px;
-                    font-size: 0.8em;
-                }
-            </style>
+            <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         </head>
         <body>
             <h2>Contacts Manager</h2>
@@ -101,7 +93,7 @@ def index():
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="submit" value="Delete" 
-                                        style="background: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+                                        class="delete-button">
                                 </form>
                             </td>
                         </tr>
