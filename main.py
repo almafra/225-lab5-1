@@ -112,7 +112,7 @@ def index():
             </style>
         </head>
         <body>
-            <h2>Add Contacts</h2>
+            <h2>Add Contacts Test</h2>
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
