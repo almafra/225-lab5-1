@@ -2,14 +2,14 @@ from flask import Flask, request, render_template_string, redirect, url_for
 import sqlite3
 import os
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__)
 
 # Database file path
 DATABASE = '/nfs/demo.db'
 
 def get_db():
     db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row  # Enables name-based column access
+    db.row_factory = sqlite3.Row  # This enables name-based access to columns
     return db
 
 def init_db():
@@ -26,8 +26,9 @@ def init_db():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    message = ''
+    message = ''  # Message indicating the result of the operation
     if request.method == 'POST':
+        # Check if it's a delete action
         if request.form.get('action') == 'delete':
             contact_id = request.form.get('contact_id')
             db = get_db()
@@ -45,55 +46,97 @@ def index():
             else:
                 message = 'Missing name or phone number.'
 
+    # Always display the contacts table
     db = get_db()
-    contacts = db.execute('''
-        SELECT *, 
-        CASE WHEN name LIKE 'Test%' THEN 1 ELSE 0 END AS is_test 
-        FROM contacts 
-        ORDER BY is_test DESC, name
-    ''').fetchall()
+    contacts = db.execute('SELECT * FROM contacts').fetchall()
 
+    # Display the HTML form along with the contacts table
     return render_template_string('''
         <!DOCTYPE html>
         <html>
         <head>
             <title>Contacts</title>
-            <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 40px;
+                    background-color: #f4f4f9;
+                }
+                h2 {
+                    color: #333;
+                }
+                form {
+                    margin-bottom: 20px;
+                }
+                label {
+                    font-weight: bold;
+                }
+                input[type="text"] {
+                    padding: 8px;
+                    width: 250px;
+                    margin-bottom: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+                input[type="submit"] {
+                    padding: 8px 16px;
+                    background-color: #4CAF50;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                input[type="submit"]:hover {
+                    background-color: #45a049;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+                th, td {
+                    padding: 12px;
+                    text-align: left;
+                    border-bottom: 1px solid #ddd;
+                }
+                th {
+                    background-color: #f2f2f2;
+                }
+                tr:hover {
+                    background-color: #f1f1f1;
+                }
+                .message {
+                    color: green;
+                    font-weight: bold;
+                }
+            </style>
         </head>
         <body>
-            <h2>Contacts Manager</h2>
+            <h2>Add Contacts</h2>
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
-                <label for="phone">Phone:</label><br>
+                <label for="phone">Phone Number:</label><br>
                 <input type="text" id="phone" name="phone" required><br><br>
-                <input type="submit" value="Add Contact">
+                <input type="submit" value="Submit">
             </form>
-            
-            {% if message %}<p style="color: green;">{{ message }}</p>{% endif %}
-            
+            <p class="message">{{ message }}</p>
             {% if contacts %}
-                <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                <table>
                     <tr>
                         <th>Name</th>
                         <th>Phone Number</th>
-                        <th>Actions</th>
+                        <th>Delete</th>
                     </tr>
                     {% for contact in contacts %}
-                        <tr {% if contact['is_test'] %}class="test-contact"{% endif %}>
-                            <td>
-                                {% if contact['is_test'] %}
-                                    <span class="test-badge">TEST</span><br>
-                                {% endif %}
-                                {{ contact['name'] }}
-                            </td>
+                        <tr>
+                            <td>{{ contact['name'] }}</td>
                             <td>{{ contact['phone'] }}</td>
                             <td>
                                 <form method="POST" action="/">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
                                     <input type="hidden" name="action" value="delete">
-                                    <input type="submit" value="Delete" 
-                                        class="delete-button">
+                                    <input type="submit" value="Delete" style="background-color: #ff4d4d;">
                                 </form>
                             </td>
                         </tr>
@@ -108,5 +151,5 @@ def index():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    init_db()
-    app.run(host='0.0.0.0', port=port)
+    init_db()  # Initialize the database and table
+    app.run(debug=True, host='0.0.0.0', port=port)
