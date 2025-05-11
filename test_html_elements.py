@@ -3,56 +3,97 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 import unittest
+import time
 
 class TestContacts(unittest.TestCase):
     def setUp(self):
-        # Setup Firefox options
         firefox_options = Options()
-        firefox_options.add_argument("--headless")  # Ensures the browser window does not open
+        firefox_options.add_argument("--headless")
         firefox_options.add_argument("--no-sandbox")
         firefox_options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Firefox(options=firefox_options)
 
     def test_contacts(self):
         driver = self.driver
-        driver.get("http://10.48.10.147")  # Replace with your target website
-        
-        # Check for the presence of all 10 test contacts
+        driver.get("http://10.48.10.147")
+
         for i in range(10):
             test_name = f'Test Name {i}'
             assert test_name in driver.page_source, f"Test contact {test_name} not found in page source"
-        print("Test completed successfully. All 10 test contacts were verified.")
 
-    # NEW TEST: Check page title
-    def test_title(self):
+    def test_page_title_and_heading(self):
         driver = self.driver
         driver.get("http://10.48.10.147")
-        self.assertIn("Contacts", driver.title)  # Adjust "Contacts" to your actual expected title
+        self.assertIn("Add Contacts", driver.page_source)
 
-    # NEW TEST: Check if a search input exists
-    def test_search_input_presence(self):
+    def test_input_fields_exist(self):
         driver = self.driver
         driver.get("http://10.48.10.147")
-        search_elements = driver.find_elements(By.TAG_NAME, "input")
-        self.assertTrue(len(search_elements) > 0, "No input elements found on the page")
+        input_fields = driver.find_elements(By.TAG_NAME, "input")
+        self.assertEqual(len(input_fields), 2)
 
-    # NEW TEST: Try typing in the first input field (if available)
-    def test_typing_in_input(self):
+    def test_table_headers(self):
         driver = self.driver
         driver.get("http://10.48.10.147")
-        try:
-            search_box = driver.find_element(By.TAG_NAME, "input")
-            search_box.send_keys("Test Name 1")
-            search_box.send_keys(Keys.RETURN)
-        except Exception as e:
-            self.fail(f"Could not interact with the input field: {e}")
+        headers = driver.find_elements(By.TAG_NAME, "th")
+        header_texts = [h.text.strip() for h in headers]
+        for expected in ["Name", "Phone Number", "Delete"]:
+            self.assertIn(expected, header_texts)
 
-    # NEW TEST: Check for presence of footer or an element by ID/class
-    def test_footer_presence(self):
+    def test_contact_ali_exists(self):
         driver = self.driver
         driver.get("http://10.48.10.147")
-        footer_elements = driver.find_elements(By.TAG_NAME, "footer")
-        self.assertTrue(len(footer_elements) > 0, "Footer not found on the page")
+        self.assertIn("Ali", driver.page_source)
+
+    def test_total_number_of_contacts(self):
+        driver = self.driver
+        driver.get("http://10.48.10.147")
+        rows = driver.find_elements(By.XPATH, "//table//tr")[1:]
+        self.assertEqual(len(rows), 11)
+
+    # NEW TEST: Add a contact using the form
+    def test_add_new_contact(self):
+        driver = self.driver
+        driver.get("http://10.48.10.147")
+
+        input_fields = driver.find_elements(By.TAG_NAME, "input")
+        self.assertEqual(len(input_fields), 2, "Expected two input fields")
+
+        # Fill out the form
+        input_fields[0].send_keys("Selenium Bot")
+        input_fields[1].send_keys("555-555-5555")
+        input_fields[1].send_keys(Keys.RETURN)  # Assuming this submits the form
+
+        time.sleep(1)  # Wait for the page to update
+
+        # Verify the contact is added
+        self.assertIn("Selenium Bot", driver.page_source)
+        self.assertIn("555-555-5555", driver.page_source)
+
+    # NEW TEST: Delete a contact (if delete button/link exists)
+    def test_delete_contact(self):
+        driver = self.driver
+        driver.get("http://10.48.10.147")
+
+        # Add a contact to delete
+        input_fields = driver.find_elements(By.TAG_NAME, "input")
+        input_fields[0].send_keys("Delete Me")
+        input_fields[1].send_keys("000-000-0000")
+        input_fields[1].send_keys(Keys.RETURN)
+        time.sleep(1)
+
+        # Find and click the delete button for "Delete Me"
+        rows = driver.find_elements(By.XPATH, "//table//tr")
+        for row in rows:
+            if "Delete Me" in row.text:
+                delete_button = row.find_element(By.TAG_NAME, "button")  # Adjust if it's a link
+                delete_button.click()
+                break
+
+        time.sleep(1)
+
+        # Confirm contact is gone
+        self.assertNotIn("Delete Me", driver.page_source)
 
     def tearDown(self):
         self.driver.quit()
