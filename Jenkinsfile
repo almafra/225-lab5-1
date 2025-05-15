@@ -101,7 +101,7 @@ pipeline {
             slackSend color: "warning", message: "⚠️Build Completed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
         }
         failure {
-            slackSend color: "danger", message: "❌Build Not Completed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
+            slackSend color: "danger", message: "❌Build Is Not Completed: ${env.JOB_NAME} ${env.BUILD_NUMBER}"
         }
     }
 }
