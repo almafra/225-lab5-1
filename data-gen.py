@@ -4,6 +4,7 @@ import os
 DATABASE = '/nfs/demo.db'
 
 def connect_db():
+    def connect_initdb():
     """Connect to the SQLite database."""
     return sqlite3.connect(DATABASE)
 
