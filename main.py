@@ -19,12 +19,21 @@ def init_db():
             CREATE TABLE IF NOT EXISTS contacts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                email TEXT,
-                address TEXT
+                phone TEXT NOT NULL
             );
         ''')
+        try:
+            db.execute('ALTER TABLE contacts ADD COLUMN email TEXT;')
+        except sqlite3.OperationalError:
+            pass  # column already exists
+
+        try:
+            db.execute('ALTER TABLE contacts ADD COLUMN address TEXT;')
+        except sqlite3.OperationalError:
+            pass  # column already exists
+
         db.commit()
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
