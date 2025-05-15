@@ -56,63 +56,9 @@ def index():
         <html>
         <head>
             <title>Contacts</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 40px;
-                    background-color: #f4f4f9;
-                }
-                h2 {
-                    color: #333;
-                }
-                form {
-                    margin-bottom: 20px;
-                }
-                label {
-                    font-weight: bold;
-                }
-                input[type="text"] {
-                    padding: 8px;
-                    width: 250px;
-                    margin-bottom: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 4px;
-                }
-                input[type="submit"] {
-                    padding: 8px 16px;
-                    background-color: #4CAF50;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                input[type="submit"]:hover {
-                    background-color: #45a049;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }
-                th, td {
-                    padding: 12px;
-                    text-align: left;
-                    border-bottom: 1px solid #ddd;
-                }
-                th {
-                    background-color: #f2f2f2;
-                }
-                tr:hover {
-                    background-color: #f1f1f1;
-                }
-                .message {
-                    color: green;
-                    font-weight: bold;
-                }
-            </style>
         </head>
         <body>
-            <h2>Add Contacts Test for Lab 5-1</h2>
+            <h2>Add Contacts Test</h2>
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
@@ -120,9 +66,9 @@ def index():
                 <input type="text" id="phone" name="phone" required><br><br>
                 <input type="submit" value="Submit">
             </form>
-            <p class="message">{{ message }}</p>
+            <p>{{ message }}</p>
             {% if contacts %}
-                <table>
+                <table border="1">
                     <tr>
                         <th>Name</th>
                         <th>Phone Number</th>
@@ -136,7 +82,7 @@ def index():
                                 <form method="POST" action="/">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
                                     <input type="hidden" name="action" value="delete">
-                                    <input type="submit" value="Delete" style="background-color: #ff4d4d;">
+                                    <input type="submit" value="Delete">
                                 </form>
                             </td>
                         </tr>
