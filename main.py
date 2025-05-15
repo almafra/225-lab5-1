@@ -43,7 +43,7 @@ def index():
             address = request.form.get('address')
             if name and phone:
                 db = get_db()
-                db.execute('INSERT INTO contacts (name, phone, email, address) VALUES (, , ,)', 
+                db.execute('INSERT INTO contacts (name, phone, email, address) VALUES (?, ?, ?, ?)', 
                            (name, phone, email, address))
                 db.commit()
                 message = 'Contact added successfully.'
