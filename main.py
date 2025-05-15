@@ -113,7 +113,7 @@ def index():
                 <label for="email">Email Address:</label><br>
                 <input type="text" id="email" name="email"><br>
 
-                <label for="address">Address:</label><br>
+                <label for="address">Home Address:</label><br>
                 <input type="text" id="address" name="address"><br><br>
 
                 <input type="submit" value="Submit">
@@ -125,8 +125,8 @@ def index():
                 <table>
                     <tr>
                         <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Email Address</th>
                         <th>Home Address</th>
                         <th>Delete</th>
                     </tr>
@@ -135,7 +135,7 @@ def index():
                             <td>{{ contact['name'] }}</td>
                             <td>{{ contact['phone'] }}</td>
                             <td>{{ contact['email'] or '' }}</td>
-                            <td>{{ contact['home address'] or '' }}</td>
+                            <td>{{ contact['address'] or '' }}</td>
                             <td>
                                 <form method="POST" action="/">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
