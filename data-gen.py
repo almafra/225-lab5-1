@@ -1,4 +1,11 @@
-from db_utils import connect_db, init_db
+import sqlite3
+import os
+
+DATABASE = '/nfs/demo.db'
+
+def connect_db():
+    """Connect to the SQLite database."""
+    return sqlite3.connect(DATABASE)
 
 def generate_test_data(num_contacts):
     """Generate test data for the contacts table."""
@@ -12,5 +19,4 @@ def generate_test_data(num_contacts):
     db.close()
 
 if __name__ == '__main__':
-    init_db()
-    generate_test_data(10)
+    generate_test_data(10)  # Generate 10 test contacts.
