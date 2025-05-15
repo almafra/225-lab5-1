@@ -60,7 +60,7 @@ def index():
                 body {
                     font-family: Arial, sans-serif;
                     margin: 40px;
-                    background-color: #f4f4f9;
+                    background-color: #8d8deb;
                 }
                 h2 {
                     color: #333;
