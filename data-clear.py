@@ -1,5 +1,6 @@
 import sqlite3
 
+# Database file path, ensure this matches the path used in your Flask application
 DATABASE = '/nfs/demo.db'
 
 def connect_db():
@@ -7,26 +8,13 @@ def connect_db():
     return sqlite3.connect(DATABASE)
 
 def clear_test_contacts():
-    """Clear test contacts with basic error handling."""
-    try:
-        db = connect_db()
-        cursor = db.cursor()
-        # Count before deleting
-        cursor.execute("SELECT COUNT(*) FROM contacts WHERE name LIKE 'Test Name %'")
-        count = cursor.fetchone()[0]
-        
-        if count > 0:
-            cursor.execute("DELETE FROM contacts WHERE name LIKE 'Test Name %'")
-            db.commit()
-            print(f'Deleted {count} test contacts.')
-        else:
-            print('No test contacts found.')
-            
-    except sqlite3.Error as e:
-        print(f'Database error: {e}')
-    finally:
-        if db:
-            db.close()
+    """Clear only the test contacts from the database."""
+    db = connect_db()
+    # Assuming all test contacts follow a specific naming pattern
+    db.execute("DELETE FROM contacts WHERE name LIKE 'Test Name %'")
+    db.commit()
+    print('Test contacts have been deleted from the database.')
+    db.close()
 
 if __name__ == '__main__':
     clear_test_contacts()
