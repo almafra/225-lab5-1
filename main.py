@@ -1,16 +1,15 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, redirect, url_for
 import sqlite3
 import os
-from datetime import datetime
 
 app = Flask(__name__)
 
-# Database setup
+# Database file path
 DATABASE = '/nfs/demo.db'
 
 def get_db():
     db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row
+    db.row_factory = sqlite3.Row  # This enables name-based access to columns
     return db
 
 def init_db():
@@ -20,148 +19,131 @@ def init_db():
             CREATE TABLE IF NOT EXISTS contacts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                date_added TEXT DEFAULT CURRENT_TIMESTAMP
-            )
+                phone TEXT NOT NULL
+            );
         ''')
         db.commit()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    message = None
-    db = get_db()
-    
+    message = ''  # Message indicating the result of the operation
     if request.method == 'POST':
-        # Delete contact
-        if 'delete_id' in request.form:
-            db.execute('DELETE FROM contacts WHERE id = ?', (request.form['delete_id'],))
+        # Check if it's a delete action
+        if request.form.get('action') == 'delete':
+            contact_id = request.form.get('contact_id')
+            db = get_db()
+            db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
             db.commit()
-            message = ('success', 'Contact deleted!')
-        
-        # Add new contact
-        elif 'name' in request.form and 'phone' in request.form:
-            name = request.form['name'].strip()
-            phone = request.form['phone'].strip()
-            
+            message = 'Contact deleted successfully.'
+        else:
+            name = request.form.get('name')
+            phone = request.form.get('phone')
             if name and phone:
+                db = get_db()
                 db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
                 db.commit()
-                message = ('success', 'Contact added!')
+                message = 'Contact added successfully.'
             else:
-                message = ('error', 'Please fill both fields')
+                message = 'Missing name or phone number.'
 
-    contacts = db.execute('SELECT * FROM contacts ORDER BY date_added DESC').fetchall()
-    
+    # Always display the contacts table
+    db = get_db()
+    contacts = db.execute('SELECT * FROM contacts').fetchall()
+
+    # Display the HTML form along with the contacts table
     return render_template_string('''
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Contact Manager</title>
+            <title>Contacts</title>
             <style>
                 body {
                     font-family: Arial, sans-serif;
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    line-height: 1.6;
+                    margin: 40px;
+                    background-color: #f4f4f9;
                 }
-                h1 {
+                h2 {
                     color: #333;
-                    text-align: center;
-                }
-                .alert {
-                    padding: 10px;
-                    margin: 10px 0;
-                    border-radius: 4px;
-                }
-                .success {
-                    background: #dff0d8;
-                    color: #3c763d;
-                }
-                .error {
-                    background: #f2dede;
-                    color: #a94442;
                 }
                 form {
-                    background: #f9f9f9;
-                    padding: 20px;
-                    border-radius: 5px;
                     margin-bottom: 20px;
                 }
-                input[type="text"] {
-                    width: 100%;
-                    padding: 8px;
-                    margin: 8px 0;
-                    box-sizing: border-box;
+                label {
+                    font-weight: bold;
                 }
-                button {
-                    background: #4CAF50;
+                input[type="text"] {
+                    padding: 8px;
+                    width: 250px;
+                    margin-bottom: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+                input[type="submit"] {
+                    padding: 8px 16px;
+                    background-color: #4CAF50;
                     color: white;
-                    padding: 10px 15px;
                     border: none;
                     border-radius: 4px;
                     cursor: pointer;
                 }
-                button.delete {
-                    background: #f44336;
+                input[type="submit"]:hover {
+                    background-color: #45a049;
                 }
                 table {
                     width: 100%;
                     border-collapse: collapse;
+                    margin-top: 20px;
                 }
                 th, td {
                     padding: 12px;
                     text-align: left;
                     border-bottom: 1px solid #ddd;
                 }
-                tr:hover {
-                    background-color: #f5f5f5;
+                th {
+                    background-color: #f2f2f2;
                 }
-                .date {
-                    color: #666;
-                    font-size: 0.9em;
+                tr:hover {
+                    background-color: #f1f1f1;
+                }
+                .message {
+                    color: green;
+                    font-weight: bold;
                 }
             </style>
         </head>
         <body>
-            <h1>📒 Contact Manager</h1>
-            
-            {% if message %}
-                <div class="alert {{ message[0] }}">{{ message[1] }}</div>
-            {% endif %}
-            
-            <form method="POST">
-                <h2>Add New Contact</h2>
-                <input type="text" name="name" placeholder="Name" required>
-                <input type="text" name="phone" placeholder="Phone" required>
-                <button type="submit">Save Contact</button>
+            <h2>Add Contacts Test for Lab 5-1</h2>
+            <form method="POST" action="/">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name" required><br>
+                <label for="phone">Phone Number:</label><br>
+                <input type="text" id="phone" name="phone" required><br><br>
+                <input type="submit" value="Submit">
             </form>
-            
+            <p class="message">{{ message }}</p>
             {% if contacts %}
-                <h2>Your Contacts</h2>
                 <table>
                     <tr>
                         <th>Name</th>
-                        <th>Phone</th>
-                        <th>Added</th>
-                        <th>Action</th>
+                        <th>Phone Number</th>
+                        <th>Delete</th>
                     </tr>
                     {% for contact in contacts %}
-                    <tr>
-                        <td>{{ contact['name'] }}</td>
-                        <td>{{ contact['phone'] }}</td>
-                        <td class="date">{{ contact['date_added'][:10] }}</td>
-                        <td>
-                            <form method="POST" style="display:inline">
-                                <input type="hidden" name="delete_id" value="{{ contact['id'] }}">
-                                <button type="submit" class="delete">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>{{ contact['name'] }}</td>
+                            <td>{{ contact['phone'] }}</td>
+                            <td>
+                                <form method="POST" action="/">
+                                    <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="submit" value="Delete" style="background-color: #ff4d4d;">
+                                </form>
+                            </td>
+                        </tr>
                     {% endfor %}
                 </table>
             {% else %}
-                <p>No contacts yet. Add your first contact above!</p>
+                <p>No contacts found.</p>
             {% endif %}
         </body>
         </html>
@@ -169,5 +151,5 @@ def index():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    init_db()
-    app.run(host='0.0.0.0', port=port)
+    init_db()  # Initialize the database and table
+    app.run(debug=True, host='0.0.0.0', port=port)
