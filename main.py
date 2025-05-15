@@ -127,7 +127,7 @@ def index():
                         <th>Name</th>
                         <th>Phone</th>
                         <th>Email</th>
-                        <th>Address</th>
+                        <th>Home Address</th>
                         <th>Delete</th>
                     </tr>
                     {% for contact in contacts %}
