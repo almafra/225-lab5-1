@@ -113,16 +113,16 @@ def index():
         <body>
             <h2>Add Contacts Test for Lab 5-1</h2>
             <form method="POST" action="/">
-                <label for="name">Name:</label><br>
+                <label for="name">Name🔥:</label><br>
                 <input type="text" id="name" name="name" required><br>
 
-                <label for="phone">Phone Number:</label><br>
+                <label for="phone">Phone Number📞:</label><br>
                 <input type="text" id="phone" name="phone" required><br>
 
-                <label for="email">Email Address:</label><br>
+                <label for="email">Email Address📧:</label><br>
                 <input type="text" id="email" name="email"><br>
 
-                <label for="address">Address:</label><br>
+                <label for="address">Home Address📍:</label><br>
                 <input type="text" id="address" name="address"><br><br>
 
                 <input type="submit" value="Submit">
