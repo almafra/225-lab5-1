@@ -109,6 +109,10 @@ def index():
                     color: green;
                     font-weight: bold;
                 }
+                small {
+                    color: #666;
+                    font-size: 11px;
+                }
             </style>
         </head>
         <body>
@@ -124,9 +128,9 @@ def index():
             {% if contacts %}
                 <table>
                     <tr>
-                        <th>Name</th>
-                        <th>Phone Number</th>
-                        <th>Delete</th>
+                        <th title="Full name of the contact">Name<br><small>(Full name)</small></th>
+                        <th title="Include area code, e.g., 555-123-4567">Phone Number<br><small>(Area code + number)</small></th>
+                        <th title="Permanently remove contact from the list">Delete<br><small>(Click to remove)</small></th>
                     </tr>
                     {% for contact in contacts %}
                         <tr>
