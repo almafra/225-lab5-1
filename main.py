@@ -135,7 +135,7 @@ def index():
                             <td>{{ contact['name'] }}</td>
                             <td>{{ contact['phone'] }}</td>
                             <td>{{ contact['email'] or '' }}</td>
-                            <td>{{ contact['address'] or '' }}</td>
+                            <td>{{ contact['home address'] or '' }}</td>
                             <td>
                                 <form method="POST" action="/">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
