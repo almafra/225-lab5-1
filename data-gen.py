@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-
+DATABASE = '/nfs/demo.db'
 
 def connect_db():
     """Connect to the SQLite database."""
