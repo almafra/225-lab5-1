@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template_string, redirect, url_for  
+from flask import Flask, request, render_template_string, redirect, url_for 
 import sqlite3
 import os
 
@@ -113,7 +113,7 @@ def index():
                 <label for="email">Email Address:</label><br>
                 <input type="text" id="email" name="email"><br>
 
-                <label for="address">Home Address:</label><br>
+                <label for="address">Address:</label><br>
                 <input type="text" id="address" name="address"><br><br>
 
                 <input type="submit" value="Submit">
@@ -125,9 +125,9 @@ def index():
                 <table>
                     <tr>
                         <th>Name</th>
-                        <th>Phone Number</th>
-                        <th>Email Address</th>
-                        <th>Home Address</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Address</th>
                         <th>Delete</th>
                     </tr>
                     {% for contact in contacts %}
@@ -155,4 +155,5 @@ def index():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port).
+    init_db()
+    app.run(debug=True, host='0.0.0.0', port=port)
