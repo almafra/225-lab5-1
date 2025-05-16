@@ -10,6 +10,12 @@ def connect_db():
 def generate_test_data(num_contacts):
     """Generate test data for the contacts table with unique names."""
     db = connect_db()
+
+    # Optional: clear the table to avoid duplicate entries
+    # WARNING: Uncomment the next two lines ONLY if you're okay deleting all existing records
+    # db.execute('DELETE FROM contacts')
+    # db.commit()
+
     sample_names = [
         'Alice Johnson', 'Bob Smith', 'Charlie Davis', 'Diana Evans',
         'Ethan Brown', 'Fiona Clark', 'George Miller', 'Hannah Lee',
@@ -17,15 +23,18 @@ def generate_test_data(num_contacts):
     ]
 
     for i in range(num_contacts):
-        # Append index to make names unique
         base_name = sample_names[i % len(sample_names)]
-        name = f'{base_name} {i}'
+        name = f'{base_name} {i}'  # This makes it unique
         phone = f'123-456-789{i}'
-        db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
+
+        try:
+            db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
+        except sqlite3.IntegrityError as e:
+            print(f"Failed to insert {name}: {e}")
 
     db.commit()
-    print(f'{num_contacts} test contacts added to the database.')
+    print(f'{num_contacts} test contacts attempted to be added to the database.')
     db.close()
 
 if __name__ == '__main__':
-    generate_test_data(10)  # Generate 10 test contacts.
+    generate_test_data(10)
