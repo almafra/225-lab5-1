@@ -11,13 +11,6 @@ def generate_test_data(num_contacts):
     """Generate test data for the contacts table."""
     db = connect_db()
     for i in range(num_contacts):
-        """Generate test data for the contacts table."""
-    db = demo_db()
-    sample_names = [
-        'Alice Johnson', 'Bob Smith', 'Charlie Davis', 'Diana Evans',
-        'Ethan Brown', 'Fiona Clark', 'George Miller', 'Hannah Lee',
-        'Ian Thompson', 'Julia White'
-    ]
         name = f'Test Name {i}'
         phone = f'123-456-789{i}'
         db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
