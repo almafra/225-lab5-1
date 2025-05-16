@@ -14,8 +14,7 @@ def generate_test_data(num_contacts):
 
     real_names = [
         'Alice Johnson', 'Bob Smith', 'Charlie Nguyen', 'Diana Lee', 'Ethan Patel',
-        'Fiona Garcia', 'George Kim', 'Hannah Brown', 'Isaac Wilson', 'Julia Chen',
-        'Kevin White', 'Laura Martinez', 'Mohammed Ali', 'Natalie Green', 'Oscar Turner'
+        'Fiona Garcia', 'George Kim', 'Hannah Brown', 'Isaac Wilson', 'Julia Chen'
     ]
 
     for i in range(num_contacts):
