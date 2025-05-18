@@ -111,7 +111,7 @@ def index():
             </style>
         </head>
         <body>
-            <h2>Add Contacts Test for Lab 5-1</h2>
+            <h2>Add Contacts: Lab 5-1 (Final Lab)</h2>
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
